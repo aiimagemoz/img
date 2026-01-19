@@ -5,9 +5,9 @@ on:
       category:
         description: 'Categoria'
         required: true
-        default: 'fashion'
+        default: 'mix'
       urls:
-        description: 'Incolla gli URL separati da virgola'
+        description: 'Incolla link separati da virgola'
         required: true
 
 jobs:
@@ -17,22 +17,24 @@ jobs:
       contents: write
     steps:
       - uses: actions/checkout@v4
-      - name: Download
+      - name: Scarica Immagini
         run: |
           mkdir -p gallery
           cd gallery
           IFS=',' read -ra ADDR <<< "${{ github.event.inputs.urls }}"
-          count=1
           for url in "${ADDR[@]}"; do
             clean_url=$(echo $url | xargs)
-            filename="${{ github.event.inputs.category }}_$(date +%s)_$count.jpg"
-            curl -L "$clean_url" -o "$filename"
-            ((count++))
+            if [ -n "$clean_url" ]; then
+              # Nome file con timestamp preciso per evitare duplicati
+              filename="${{ github.event.inputs.category }}_$(date +%s%N).jpg"
+              curl -L "$clean_url" -o "$filename"
+              echo "Scaricato: $filename"
+            fi
           done
-      - name: Salva
+      - name: Salva nel Repository
         run: |
           git config --global user.name "ImageBot"
           git config --global user.email "bot@github.com"
           git add gallery/
-          git commit -m "Nuove immagini" || echo "Null"
+          git commit -m "Aggiunte nuove immagini" || exit 0
           git push
