@@ -1,0 +1,38 @@
+name: Scaricatore Pro
+on:
+  workflow_dispatch:
+    inputs:
+      category:
+        description: 'Categoria'
+        required: true
+        default: 'fashion'
+      urls:
+        description: 'Incolla gli URL separati da virgola'
+        required: true
+
+jobs:
+  download:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+      - name: Download
+        run: |
+          mkdir -p gallery
+          cd gallery
+          IFS=',' read -ra ADDR <<< "${{ github.event.inputs.urls }}"
+          count=1
+          for url in "${ADDR[@]}"; do
+            clean_url=$(echo $url | xargs)
+            filename="${{ github.event.inputs.category }}_$(date +%s)_$count.jpg"
+            curl -L "$clean_url" -o "$filename"
+            ((count++))
+          done
+      - name: Salva
+        run: |
+          git config --global user.name "ImageBot"
+          git config --global user.email "bot@github.com"
+          git add gallery/
+          git commit -m "Nuove immagini" || echo "Null"
+          git push
