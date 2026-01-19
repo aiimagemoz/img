@@ -1,0 +1,2 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Error><Code>NoSuchBucket</Code><Message>The specified bucket does not exist</Message><BucketName>lexica-artifacts</BucketName><RequestId>ZJW3W83XZCA9G7XE</RequestId><HostId>+z8I19jCcWzYYdd6ZJu4bj1mmRz2FASALcfVScwTuzdSB3MCZkjpLFG3r5AmgyvU9cF0JcjcqmVwGRA4LDwT4FmzobGsJL4u</HostId></Error>
